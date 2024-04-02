@@ -44,8 +44,9 @@ def main():
         comics_url = f'https://xkcd.com/{comics_id}/info.0.json'
         comics_response = requests.get(comics_url)
         comics_response.raise_for_status()
-        image_url = comics_response.json()['img']
-        comment = comics_response.json()['alt']
+        comics = comics_response.json()
+        image_url = comics['img']
+        comment = comics['alt']
         filename = 'comics.png'
         download_comics(image_url, filename)
         with open(filename, 'rb') as document:
