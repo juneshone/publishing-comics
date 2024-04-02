@@ -7,6 +7,25 @@ import time
 from dotenv import load_dotenv
 
 
+def publish_comics(url, bot, chat_id):
+    filename = 'comics.png'
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        comics = response.json()
+        image_url = comics['img']
+        comment = comics['alt']
+        download_comics(image_url, filename)
+        with open(filename, 'rb') as document:
+            bot.send_document(
+                chat_id=chat_id,
+                document=document,
+                caption=comment
+            )
+    finally:
+        os.remove(filename)
+
+
 def download_comics(url, filename):
     response = requests.get(url)
     response.raise_for_status()
@@ -42,22 +61,7 @@ def main():
     while True:
         comics_id = random.randint(1, current_comics_id)
         comics_url = f'https://xkcd.com/{comics_id}/info.0.json'
-        filename = 'comics.png'
-        try:
-            comics_response = requests.get(comics_url)
-            comics_response.raise_for_status()
-            comics = comics_response.json()
-            image_url = comics['img']
-            comment = comics['alt']
-            download_comics(image_url, filename)
-            with open(filename, 'rb') as document:
-                bot.send_document(
-                    chat_id=args.chat_id,
-                    document=document,
-                    caption=comment
-                )
-        finally:
-            os.remove(filename)
+        publish_comics(comics_url, bot, args.chat_id)
         time.sleep(args.interval)
 
 
