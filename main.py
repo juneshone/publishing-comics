@@ -8,15 +8,10 @@ from dotenv import load_dotenv
 
 
 def download_comics(url, filename):
-    response = get_response(url)
-    with open(filename, 'wb') as file:
-        file.write(response.content)
-
-
-def get_response(url):
     response = requests.get(url)
     response.raise_for_status()
-    return response
+    with open(filename, 'wb') as file:
+        file.write(response.content)
 
 
 def main():
@@ -40,13 +35,15 @@ def main():
     args = parser.parse_args()
 
     current_comics_url = 'https://xkcd.com/info.0.json'
-    current_comics_response = get_response(current_comics_url)
+    current_comics_response = requests.get(current_comics_url)
+    current_comics_response.raise_for_status()
     current_comics_id = current_comics_response.json()['num']
 
     while True:
         comics_id = random.randint(1, current_comics_id)
         comics_url = f'https://xkcd.com/{comics_id}/info.0.json'
-        comics_response = get_response(comics_url)
+        comics_response = requests.get(comics_url)
+        comics_response.raise_for_status()
         image_url = comics_response.json()['img']
         comment = comics_response.json()['alt']
         filename = 'comics.png'
