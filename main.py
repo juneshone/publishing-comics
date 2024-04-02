@@ -21,7 +21,7 @@ def get_response(url):
 
 def main():
     load_dotenv()
-    bot = telegram.Bot(token=os.getenv('TELEGRAM_BOT_TOKEN'))
+    bot = telegram.Bot(token=os.environ['TELEGRAM_BOT_TOKEN'])
 
     parser = argparse.ArgumentParser(
         description='Публикация комиксов в Telegram чате'
