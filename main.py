@@ -42,20 +42,22 @@ def main():
     while True:
         comics_id = random.randint(1, current_comics_id)
         comics_url = f'https://xkcd.com/{comics_id}/info.0.json'
-        comics_response = requests.get(comics_url)
-        comics_response.raise_for_status()
-        comics = comics_response.json()
-        image_url = comics['img']
-        comment = comics['alt']
         filename = 'comics.png'
-        download_comics(image_url, filename)
-        with open(filename, 'rb') as document:
-            bot.send_document(
-                chat_id=args.chat_id,
-                document=document,
-                caption=comment
-            )
-        os.remove(filename)
+        try:
+            comics_response = requests.get(comics_url)
+            comics_response.raise_for_status()
+            comics = comics_response.json()
+            image_url = comics['img']
+            comment = comics['alt']
+            download_comics(image_url, filename)
+            with open(filename, 'rb') as document:
+                bot.send_document(
+                    chat_id=args.chat_id,
+                    document=document,
+                    caption=comment
+                )
+        finally:
+            os.remove(filename)
         time.sleep(args.interval)
 
 
