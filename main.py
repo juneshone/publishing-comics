@@ -7,13 +7,13 @@ import time
 from dotenv import load_dotenv
 
 
-def publish_comics(url, bot, filename, chat_id):
+def publish_comic(url, bot, filename, chat_id):
     response = requests.get(url)
     response.raise_for_status()
-    comics = response.json()
-    image_url = comics['img']
-    comment = comics['alt']
-    download_comics(image_url, filename)
+    comic = response.json()
+    image_url = comic['img']
+    comment = comic['alt']
+    download_comic(image_url, filename)
     with open(filename, 'rb') as document:
         bot.send_document(
             chat_id=chat_id,
@@ -22,7 +22,7 @@ def publish_comics(url, bot, filename, chat_id):
         )
 
 
-def download_comics(url, filename):
+def download_comic(url, filename):
     response = requests.get(url)
     response.raise_for_status()
     with open(filename, 'wb') as file:
@@ -49,17 +49,17 @@ def main():
     )
     args = parser.parse_args()
 
-    current_comics_url = 'https://xkcd.com/info.0.json'
-    current_comics_response = requests.get(current_comics_url)
-    current_comics_response.raise_for_status()
-    current_comics_id = current_comics_response.json()['num']
+    current_comic_url = 'https://xkcd.com/info.0.json'
+    current_comic_response = requests.get(current_comic_url)
+    current_comic_response.raise_for_status()
+    current_comic_id = current_comic_response.json()['num']
 
     while True:
-        comics_id = random.randint(1, current_comics_id)
-        comics_url = f'https://xkcd.com/{comics_id}/info.0.json'
-        filename = 'comics.png'
+        comic_id = random.randint(1, current_comic_id)
+        comic_url = f'https://xkcd.com/{comic_id}/info.0.json'
+        filename = 'comic.png'
         try:
-            publish_comics(comics_url, bot, filename, args.chat_id)
+            publish_comic(comic_url, bot, filename, args.chat_id)
         finally:
             os.remove(filename)
         time.sleep(args.interval)
